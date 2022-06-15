@@ -4,11 +4,8 @@ import com.hellofresh.demo.service.CounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Vector;
 
 @RestController
@@ -19,15 +16,22 @@ public class Controller {
     private CounterService counterService;
 
     // I used Vector and not List because it is thread safe.
-    private Vector<Object> list = new Vector<>();
+    public Vector<Object> list = new Vector<>();
 
     // make the method synchronized to make the API accept concurrent requests
-    @RequestMapping("/add")
-    public synchronized ResponseEntity<String> addPoints(@RequestBody String pointsStr) {
+    @PostMapping("/event")
+    public synchronized ResponseEntity<?> addPoints(@RequestBody String pointsStr) {
         if (pointsStr.isEmpty() || pointsStr.isBlank())
-            return new ResponseEntity<>("Empty Input", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Empty Input");
 
-        String result = counterService.collectAllPoints(list, pointsStr);
+        counterService.collectAllPoints(this.list, pointsStr);
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED).body("Data was successfully processed");
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<String> getStats() {
+        String result = counterService.getStatsString(this.list);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .body(result);

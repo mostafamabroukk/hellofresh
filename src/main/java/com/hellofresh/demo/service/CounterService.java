@@ -13,10 +13,12 @@ import org.springframework.stereotype.Service;
 public class CounterService {
 
 //    This method formats the numbers into one string
-    private String getResultString(Vector<Object> list) {
+//    NOTE that the sum and average of 𝑥 are expected to be accurate up to the 5th fractional part.
+//    But in the example is rounded to 10 fractional.
+    public String getStatsString(Vector<Object> list) {
         String formattedStr0 = String.valueOf(list.get(0));
-        String formattedStr1 = String.format("%.10f", list.get(1));
-        String formattedStr2 = String.format("%.10f", list.get(2));
+        String formattedStr1 = String.format("%.5f", list.get(1));
+        String formattedStr2 = String.format("%.5f", list.get(2));
         String formattedStr3 = String.valueOf(list.get(3));
         String formattedStr4 = String.format("%.3f", list.get(4));
         return formattedStr0 +","+ formattedStr1 +","+ formattedStr2 +","+ formattedStr3 +","+ formattedStr4;
@@ -36,9 +38,9 @@ public class CounterService {
         return false;
     }
 
-    public String collectAllPoints(Vector<Object> list, String inputString) {
+    public void collectAllPoints(Vector<Object> list, String inputString) {
         if (inputString.isEmpty())
-            return "";
+            return;
 
         String[] pointsArray = inputString.split("\n");
 
@@ -53,7 +55,6 @@ public class CounterService {
             sumX = (double) list.get(1);
             sumY = (long) list.get(3);
         }
-
 
         for (String pointStr : pointsArray) {
             pointStr = pointStr.replace("\n", "").replace("\r", "");
@@ -71,18 +72,16 @@ public class CounterService {
                 counter++;
             }
         }
-        double averageX = sumX / counter;
-        double averageY = sumY / counter;
+        double averageX = (counter!=0) ? sumX / counter : 0;
+        double averageY = (counter!=0) ? sumY / counter : 0;
 
-        // I cleared the list to update the value
+        // I cleared the list to update all values
         list.clear();
         list.add(counter);
         list.add(sumX);
         list.add(averageX);
         list.add(sumY);
         list.add(averageY);
-
-        return getResultString(list);
     }
 
 }

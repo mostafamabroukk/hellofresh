@@ -1,4 +1,4 @@
-# Solution
+# Solution:
 
 * REST API: "/api/event" to receive the points.
 * REST API: "/api/stats" to display the stats as in the example response.
